@@ -12,9 +12,7 @@ function wrapUnwrappedHocs(...hocs: IHigherOrderComponent<any, any>[]) {
   });
 }
 
-export function chain<PropsIn, PropsOut>(
-  ...hocs: IHigherOrderComponent<any, any>[]
-) {
+export function chain<PropsIn, PropsOut>(...hocs: IHigherOrderComponent<any, any>[]) {
   const wrappedHocs = wrapUnwrappedHocs(...hocs);
   return flowRight<IHigherOrderComponent<PropsIn, PropsOut>>(...wrappedHocs);
 }

@@ -1,26 +1,25 @@
 import { setContainerDisplayName } from './displayName';
 import { IHigherOrderComponent, ReactComponent } from './types';
-import { withMemoization } from './withMemoization';
+import { memoize } from 'lodash';
 const hoistNonReactStatic = require('hoist-non-react-statics');
 
-export function wrap<PropsIn, PropsOut>(
-  hoc: IHigherOrderComponent<PropsIn, PropsOut>,
-  useMemoization = true
-) {
-  const enhancedHoc = withMemoization(hoc, useMemoization);
+export const wrap = memoize(
+  <PropsIn, PropsOut>(hoc: IHigherOrderComponent<PropsIn, PropsOut>) => {
+    const wrappedHoc: IHigherOrderComponent<PropsIn, PropsOut> = memoize(
+      (WrappedComponent: ReactComponent<PropsIn>) => {
+        const ContainerComponent = hoc(WrappedComponent);
 
-  const wrappedHoc: IHigherOrderComponent<PropsIn, PropsOut> = (WrappedComponent: ReactComponent<PropsIn>) => {
-    const ContainerComponent = enhancedHoc(WrappedComponent);
+        setContainerDisplayName(ContainerComponent, WrappedComponent);
 
-    setContainerDisplayName(ContainerComponent, WrappedComponent);
+        hoistNonReactStatic(ContainerComponent, WrappedComponent);
 
-    hoistNonReactStatic(ContainerComponent, WrappedComponent);
+        return ContainerComponent;
+      }
+    );
 
-    return ContainerComponent;
-  };
-
-  wrappedHoc.__isTwoChainzWrappedHoc = true;
-  return wrappedHoc;
-}
+    wrappedHoc.__isTwoChainzWrappedHoc = true;
+    return wrappedHoc;
+  }
+);
 
 export const rap = wrap;

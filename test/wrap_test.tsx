@@ -34,28 +34,10 @@ describe('wrap', () => {
       }
     }
 
-    it('should return the same component when memoization is on', () => {
-      const wrappedHoc = wrap(hoc, true);
-      assert.equal(wrappedHoc(TestComponent), wrappedHoc(TestComponent));
-      assert.notEqual(wrappedHoc(TestComponent), wrappedHoc(OtherTestComponent));
-    });
-
-    it('should return different components when memoization is off', () => {
-      const wrappedHoc = wrap(hoc, false);
-      assert.notEqual(wrappedHoc(TestComponent), wrappedHoc(TestComponent));
-      assert.notEqual(wrappedHoc(TestComponent), wrappedHoc(OtherTestComponent));
-    });
-
-    it('should have memoization on by default', () => {
+    it('should return the same output for a given input', () => {
       const wrappedHoc = wrap(hoc);
       assert.equal(wrappedHoc(TestComponent), wrappedHoc(TestComponent));
       assert.notEqual(wrappedHoc(TestComponent), wrappedHoc(OtherTestComponent));
-    });
-
-    it('should not cache across instances', () => {
-      const wrappedHoc1 = wrap(hoc);
-      const wrappedHoc2 = wrap(hoc);
-      assert.notEqual(wrappedHoc1(TestComponent), wrappedHoc2(TestComponent));
     });
   });
 
