@@ -12,7 +12,7 @@ The display name will be automatically generated on the container class based on
 
 ### [Don't Use HOCs Inside the render Method](https://facebook.github.io/react/docs/higher-order-components.html#dont-use-hocs-inside-the-render-method)
 
-By caching the components created by HOCs we can avoid this issue entirely, allowing you to safely use HOCs inside the render method. With caching, two calls to the same HOC with the same Component will return the same instance of a class, rather than creating a new one each time.
+By memoizing the HOCs we can avoid this issue entirely, allowing you to safely use HOCs inside the render method. With memoization, two calls to the same HOC with the same Component will return the same instance of a class, rather than creating a new one each time.
 
 ### [Static Methods Must Be Copied Over](https://facebook.github.io/react/docs/higher-order-components.html#static-methods-must-be-copied-over)
 

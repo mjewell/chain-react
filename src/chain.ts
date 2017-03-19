@@ -12,7 +12,6 @@ function wrapUnwrappedHocs(...hocs: IHigherOrderComponent<any, any>[]) {
   });
 }
 
-// should this only wrap unwrapped components?
 export function chain<PropsIn, PropsOut>(
   ...hocs: IHigherOrderComponent<any, any>[]
 ) {
