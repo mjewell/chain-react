@@ -16,6 +16,5 @@ export function chain<PropsIn, PropsOut>(
   ...hocs: IHigherOrderComponent<any, any>[]
 ) {
   const wrappedHocs = wrapUnwrappedHocs(...hocs);
-  type HOC = IHigherOrderComponent<PropsIn, PropsOut>;
-  return flowRight<HOC>(...wrappedHocs);
+  return flowRight<IHigherOrderComponent<PropsIn, PropsOut>>(...wrappedHocs);
 }
