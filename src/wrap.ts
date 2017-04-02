@@ -21,5 +21,3 @@ export const wrap = memoize(
     return wrappedHoc;
   }
 );
-
-export const rap = wrap;

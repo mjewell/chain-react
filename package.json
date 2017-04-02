@@ -39,7 +39,8 @@
     "typescript": "^2.1.5"
   },
   "dependencies": {
-    "hoist-non-react-statics": "^1.2.0"
+    "hoist-non-react-statics": "^1.2.0",
+    "lodash": "^4.17.4"
   },
   "homepage": "https://github.com/mjewell/chain-react#readme",
   "directories": {
