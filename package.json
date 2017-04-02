@@ -1,6 +1,6 @@
 {
-  "name": "two-chainz",
-  "version": "0.0.2",
+  "name": "chain-react",
+  "version": "0.0.1",
   "description": "Utilities for building Higher-Order Components in React",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,13 +13,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mjewell/sirmixalot.git"
+    "url": "git+https://github.com/mjewell/chain-react.git"
   },
   "keywords": [],
   "author": "Michael Jewell (http://github.com/mjewell)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mjewell/sirmixalot/issues"
+    "url": "https://github.com/mjewell/chain-react/issues"
   },
   "devDependencies": {
     "@types/core-js": "0.9.36",
@@ -41,7 +41,7 @@
   "dependencies": {
     "hoist-non-react-statics": "^1.2.0"
   },
-  "homepage": "https://github.com/mjewell/sirmixalot#readme",
+  "homepage": "https://github.com/mjewell/chain-react#readme",
   "directories": {
     "test": "test"
   }

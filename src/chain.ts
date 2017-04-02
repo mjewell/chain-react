@@ -4,7 +4,7 @@ import { flowRight } from 'lodash';
 
 function wrapUnwrappedHocs(...hocs: IHigherOrderComponent<any, any>[]) {
   return hocs.map(hoc => {
-    if (hoc.__isTwoChainzWrappedHoc) {
+    if (hoc.__isChainReactComponent) {
       return hoc;
     }
 

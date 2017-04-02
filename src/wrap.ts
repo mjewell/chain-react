@@ -17,7 +17,7 @@ export const wrap = memoize(
       }
     );
 
-    wrappedHoc.__isTwoChainzWrappedHoc = true;
+    wrappedHoc.__isChainReactComponent = true;
     return wrappedHoc;
   }
 );

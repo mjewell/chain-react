@@ -1,4 +1,4 @@
-# Two Chainz
+# Chain React
 
 A library for simplifying the use of Higher-Order Components (HOCs). Higher-Order Components have a few conventions and caveats assocaited with them, as listed [here](https://facebook.github.io/react/docs/higher-order-components.html). This library helps to follow these conventions and avoid these issue cases.
 

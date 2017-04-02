@@ -4,5 +4,9 @@ export type ReactComponent<Props> = ComponentClass<Props> | StatelessComponent<P
 
 export interface IHigherOrderComponent<PropsIn, PropsOut> {
   (WrappedComponent: ReactComponent<PropsIn>): ReactComponent<PropsOut>;
-  __isTwoChainzWrappedHoc?: boolean;
+  __isChainReactComponent?: boolean;
+}
+
+export interface IMap {
+  [key: string]: string;
 }
