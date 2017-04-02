@@ -1,6 +1,6 @@
 # Chain React
 
-A library for simplifying the use of Higher-Order Components (HOCs). Higher-Order Components have a few conventions and caveats assocaited with them, as listed [here](https://facebook.github.io/react/docs/higher-order-components.html). This library helps to follow these conventions and avoid these issue cases.
+A library for simplifying the use of Higher-Order Components (HOCs). Higher-Order Components have a few conventions and caveats associated with them, as listed [here](https://facebook.github.io/react/docs/higher-order-components.html). This library helps to follow these conventions and avoid these issue cases.
 
 ## Conventions
 
@@ -17,3 +17,32 @@ By memoizing the HOCs we can avoid this issue entirely, allowing you to safely u
 ### [Static Methods Must Be Copied Over](https://facebook.github.io/react/docs/higher-order-components.html#static-methods-must-be-copied-over)
 
 Static methods are copied over to your containers automatically, meaning they will always be available.
+
+## API
+
+There are two simple methods provided by this library:
+
+## `wrap`
+
+`wrap` takes a single higher-order component and returns a new higher order component. This higher order component adds a useful `displayName`, hoists non-react static methods from the component being wrapped, and is memoized so subsequent calls with the same argument will return the same new higher-order component.
+
+```
+const myHoc = WrappedComponent => { ... };
+const wrappedHoc = wrap(myHoc);
+const component = wrappedHoc(myPresenter);
+```
+
+## `chain`
+
+`chain` takes a series of higher-order components as arguments and creates a new higher order component by composing them together. It calls `wrap` on any provided higher-order components that are not already wrapped so you still get all those benefits.
+
+```
+const myHoc1 = WrappedComponent => { ... };
+const myHoc2 = WrappedComponent => { ... };
+const myHoc3 = WrappedComponent => { ... };
+const chainedHoc = chain(myHoc1, myHoc2, myHoc3);
+const component = chainedHoc(myPresenter);
+
+// the chain looks like this:
+// myHoc1 -> myHoc2 -> myHoc3 -> myPresenter
+```
