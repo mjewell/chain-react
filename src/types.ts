@@ -7,6 +7,6 @@ export interface IHigherOrderComponent<PropsIn, PropsOut> {
   __isChainReactComponent?: boolean;
 }
 
-export interface IMap {
-  [key: string]: string;
+export interface IMap<T> {
+  [key: string]: T;
 }
