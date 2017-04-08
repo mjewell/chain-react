@@ -26,11 +26,27 @@ describe('createConfigurableFunction', () => {
       assert.equal(subtractWithAllArgsLocked({ a: 5, b: 2 }), 6);
     });
 
-    it('should anot allow you to override previous locked values with new calls to lock', () => {
+    it('should not allow you to override previous locked values with new calls to lock out of strict mode', () => {
       const configurableSubtract = createConfigurableFunction(subtract);
       const subtractFrom3 = configurableSubtract.lock({ a: 3 });
       const brokenSubtractFrom4 = subtractFrom3.lock({ a: 4 });
       assert.equal(brokenSubtractFrom4({ b: 1 }), 2);
+    });
+
+    it('should error if you try to override previous locked values with new calls to lock in strict mode', () => {
+      const configurableSubtract = createConfigurableFunction(subtract, true);
+      const subtractFrom3 = configurableSubtract.lock({ a: 3 });
+      assert.throws(
+        () => subtractFrom3.lock({ a: 4 }),
+        (err: Error) => err.message === 'These keys have already been locked: a'
+      );
+    });
+
+    it('should not alter the original function', () => {
+      const configurableSubtract = createConfigurableFunction(subtract);
+      const subtractFrom3 = configurableSubtract.lock({ a: 3 });
+      assert.equal(subtractFrom3({ a: 5, b: 2 }), 1);
+      assert.equal(configurableSubtract({ a: 5, b: 2 }), 3);
     });
   });
 
@@ -58,6 +74,13 @@ describe('createConfigurableFunction', () => {
       const subtractFrom3Optionally = configurableSubtract.default({ a: 3 });
       const subtractFrom4Optionally = subtractFrom3Optionally.default({ a: 4 });
       assert.equal(subtractFrom4Optionally({ b: 1 }), 3);
+    });
+
+    it('should not alter the original function', () => {
+      const configurableSubtract = createConfigurableFunction(subtract);
+      const subtractFrom3Optionally = configurableSubtract.default({ a: 3 });
+      assert.equal(subtractFrom3Optionally({ a: 5, b: 1 }), 4);
+      assert.equal(configurableSubtract({ a: 5, b: 2 }), 3);
     });
   });
 
