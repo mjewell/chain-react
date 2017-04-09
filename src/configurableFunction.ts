@@ -16,10 +16,19 @@ function mergeParams(params: IMap<any> | undefined, lockedParams: IMap<any>, def
   return assign({}, defaultParams, params, lockedParams);
 }
 
-function getRepeatedKeys(newParams: IMap<any>, params: IMap<any>) {
-  const newKeys = Object.keys(newParams);
+function getRepeatedKeys(newParams: IMap<any> | string[], params: IMap<any>) {
+  const newKeys = newParams instanceof Array ? newParams : Object.keys(newParams);
   const oldKeys = Object.keys(params);
   return intersection(newKeys, oldKeys);
+}
+
+function throwIfParamsAreLocked(newParams: IMap<any> | string[], lockedParams: IMap<any>, strict: boolean) {
+  if (strict) {
+    const repeats = getRepeatedKeys(newParams, lockedParams);
+    if (repeats.length > 0) {
+      throw new Error(`These keys have already been locked: ${repeats.join(', ')}`);
+    }
+  }
 }
 
 function createNamedArgs(propNames: string[], args: any[]) {
@@ -31,13 +40,7 @@ function createNamedArgs(propNames: string[], args: any[]) {
 
 const configurableFunctionPrototype = {
   lock<T>(newLockedParams: IMap<any>) {
-    if (this.strict) {
-      const repeats = getRepeatedKeys(newLockedParams, this.lockedParams);
-      if (repeats.length > 0) {
-        throw new Error(`These keys have already been locked: ${repeats.join(', ')}`);
-      }
-    }
-
+    throwIfParamsAreLocked(newLockedParams, this.lockedParams, this.strict);
     const mergedLockedParams = assign({}, newLockedParams, this.lockedParams);
     return createConfigurableFunctionBase<T>(this.func, mergedLockedParams, this.defaultParams, this.strict);
   },
@@ -48,6 +51,8 @@ const configurableFunctionPrototype = {
   },
 
   splat(...propNames: string[]) {
+    throwIfParamsAreLocked(propNames, this.lockedParams, this.strict);
+
     return (...args: any[]) => {
       const newParams = createNamedArgs(propNames, args);
       const mergedParams = mergeParams(newParams, this.lockedParams, this.defaultParams);
@@ -62,9 +67,9 @@ function createConfigurableFunctionBase<T>(
   defaultParams: IMap<any>,
   strict?: boolean
 ) {
-  const configurableFunction: ConfigurableFunction<T> = <ConfigurableFunction<T>>function (params?: IMap<any>) {
+  const configurableFunction: ConfigurableFunction<T> = <ConfigurableFunction<T>> function (params?: IMap<any>) {
     const mergedParams = mergeParams(params, lockedParams, defaultParams);
-    return configurableFunction.func(mergedParams);
+    return func(mergedParams);
   };
 
   configurableFunction.func = func;

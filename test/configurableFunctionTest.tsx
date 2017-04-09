@@ -96,5 +96,28 @@ describe('createConfigurableFunction', () => {
       const reversedSubtract = configurableSubtract.splat('b', 'a');
       assert.equal(reversedSubtract(2, 3), 1);
     });
+
+    it('should not allow you to override previous locked values out of strict mode', () => {
+      const configurableSubtract = createConfigurableFunction(subtract);
+      const subtractFrom3 = configurableSubtract.lock({ a: 3 });
+      const splattedSubtractFrom3 = subtractFrom3.splat('a', 'b');
+      assert.equal(splattedSubtractFrom3(4, 1), 2);
+    });
+
+    it('should error if you try to override previous locked values in strict mode', () => {
+      const configurableSubtract = createConfigurableFunction(subtract, true);
+      const subtractFrom3 = configurableSubtract.lock({ a: 3 });
+      assert.throws(
+        () => subtractFrom3.splat('a', 'b'),
+        (err: Error) => err.message === 'These keys have already been locked: a'
+      );
+    });
+
+    it('should allow you to override previous defaulted values', () => {
+      const configurableSubtract = createConfigurableFunction(subtract);
+      const subtractFrom3 = configurableSubtract.default({ a: 3 });
+      const splattedSubtractFrom3 = subtractFrom3.splat('a', 'b');
+      assert.equal(splattedSubtractFrom3(4, 1), 3);
+    });
   });
 });
