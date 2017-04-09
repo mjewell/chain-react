@@ -1,18 +1,31 @@
+import { IConfigurableFunction, createConfigurableFunction } from './configurableFunction';
 import { IHigherOrderComponent } from './types';
 import { wrap } from './wrap';
-import { flowRight } from 'lodash';
+import { flatMap, flowRight } from 'lodash';
 
-function wrapUnwrappedHocs(...hocs: IHigherOrderComponent<any, any>[]) {
-  return hocs.map(hoc => {
-    if (hoc.__isChainReactComponent) {
-      return hoc;
-    }
-
-    return wrap(hoc);
-  });
+export interface IChainParams {
+  hocs: IHigherOrderComponent<any, any>[];
+  interlaceHoc: IHigherOrderComponent<any, any>;
 }
 
-export function chain<PropsIn, PropsOut>(...hocs: IHigherOrderComponent<any, any>[]) {
-  const wrappedHocs = wrapUnwrappedHocs(...hocs);
+function interlace(interlaceEl: any, ...arr: any[]) {
+  if (!interlaceEl) {
+    return arr;
+  }
+
+  const newArr = flatMap(arr, el => [interlaceEl, el]);
+  newArr.push(interlaceEl);
+  return newArr;
+}
+
+function chainBase<PropsIn, PropsOut>({
+  hocs,
+  interlaceHoc
+}: IChainParams) {
+  const hocsToCompose = interlace(interlaceHoc, ...hocs);
+  const wrappedHocs = hocsToCompose.map(wrap);
   return flowRight<IHigherOrderComponent<PropsIn, PropsOut>>(...wrappedHocs);
 }
+
+export const configurableChain = createConfigurableFunction(chainBase);
+export const chain = configurableChain.splatParam('hocs');

@@ -1,15 +1,16 @@
 import { IMap } from './types';
 import { assign, intersection } from 'lodash';
 
-export interface ConfigurableFunction<T> {
+export interface IConfigurableFunction<T> {
   (params?: IMap<any>): T;
   func: (params?: IMap<any>) => T;
   lockedParams: IMap<any>;
   defaultParams: IMap<any>;
   strict: boolean;
-  lock: (params: IMap<any>) => ConfigurableFunction<T>;
-  default: (params: IMap<any>) => ConfigurableFunction<T>;
-  splat: (...propNames: string[]) => (...args: any[]) => T;
+  lock: (params: IMap<any>) => IConfigurableFunction<T>;
+  default: (params: IMap<any>) => IConfigurableFunction<T>;
+  splat: (...paramNames: string[]) => (...args: any[]) => T;
+  splatParam: <S>(paramName: string) => (...args: S[]) => T;
 }
 
 function mergeParams(params: IMap<any> | undefined, lockedParams: IMap<any>, defaultParams: IMap<any>) {
@@ -38,6 +39,11 @@ function createNamedArgs(propNames: string[], args: any[]) {
   }), {});
 }
 
+function callFuncWithAllParams(params: IMap<any>) {
+  const mergedParams = mergeParams(params, this.lockedParams, this.defaultParams);
+  return this.func(mergedParams);
+}
+
 const configurableFunctionPrototype = {
   lock<T>(newLockedParams: IMap<any>) {
     throwIfParamsAreLocked(newLockedParams, this.lockedParams, this.strict);
@@ -50,13 +56,21 @@ const configurableFunctionPrototype = {
     return createConfigurableFunctionBase<T>(this.func, this.lockedParams, mergedDefaultParams, this.strict);
   },
 
-  splat(...propNames: string[]) {
-    throwIfParamsAreLocked(propNames, this.lockedParams, this.strict);
+  splat(...paramNames: string[]) {
+    throwIfParamsAreLocked(paramNames, this.lockedParams, this.strict);
 
     return (...args: any[]) => {
-      const newParams = createNamedArgs(propNames, args);
-      const mergedParams = mergeParams(newParams, this.lockedParams, this.defaultParams);
-      return this.func(mergedParams);
+      const newParams = createNamedArgs(paramNames, args);
+      return callFuncWithAllParams.call(this, newParams);
+    };
+  },
+
+  splatParam<S>(paramName: string) {
+    throwIfParamsAreLocked([paramName], this.lockedParams, this.strict);
+
+    return (...args: S[]) => {
+      const newParams = { [paramName]: args };
+      return callFuncWithAllParams.call(this, newParams);
     };
   }
 };
@@ -67,7 +81,7 @@ function createConfigurableFunctionBase<T>(
   defaultParams: IMap<any>,
   strict?: boolean
 ) {
-  const configurableFunction: ConfigurableFunction<T> = <ConfigurableFunction<T>> function (params?: IMap<any>) {
+  const configurableFunction: IConfigurableFunction<T> = <IConfigurableFunction<T>> function (params?: IMap<any>) {
     const mergedParams = mergeParams(params, lockedParams, defaultParams);
     return func(mergedParams);
   };

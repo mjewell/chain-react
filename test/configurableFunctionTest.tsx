@@ -120,4 +120,54 @@ describe('createConfigurableFunction', () => {
       assert.equal(splattedSubtractFrom3(4, 1), 3);
     });
   });
+
+  describe('splatParam', () => {
+    type MapParams = {
+      array: string[];
+      iteratee: (el: string) => any;
+    }
+    const map = ({ array, iteratee }: MapParams) => array.map(iteratee);
+
+    it('should create a new function which can be called with regular params', () => {
+      const configurableMap = createConfigurableFunction(map);
+      const configurableMapToUpperCase = configurableMap.lock({
+        iteratee: (x: string) => x.toUpperCase()
+      });
+      const mapToUpperCase = configurableMapToUpperCase.splatParam<string>('array');
+      assert.deepEqual(mapToUpperCase('hello', 'world'), ['HELLO', 'WORLD']);
+    });
+
+    it('should not allow you to override previous locked values out of strict mode', () => {
+      const configurableMap = createConfigurableFunction(map);
+      const configurableMapToUpperCase = configurableMap.lock({
+        array: [],
+        iteratee: (x: string) => x.toUpperCase()
+      });
+      const mapToUpperCase = configurableMapToUpperCase.splatParam('array');
+      assert.deepEqual(mapToUpperCase('hello', 'world'), []);
+    });
+
+    it('should error if you try to override previous locked values in strict mode', () => {
+      const configurableMap = createConfigurableFunction(map, true);
+      const configurableMapToUpperCase = configurableMap.lock({
+        array: [],
+        iteratee: (x: string) => x.toUpperCase()
+      });
+
+      assert.throws(
+        () => configurableMapToUpperCase.splatParam('array'),
+        (err: Error) => err.message === 'These keys have already been locked: array'
+      );
+    });
+
+    it('should allow you to override previous defaulted values', () => {
+      const configurableMap = createConfigurableFunction(map);
+      const configurableMapToUpperCase = configurableMap.default({
+        array: [],
+        iteratee: (x: string) => x.toUpperCase()
+      });
+      const mapToUpperCase = configurableMapToUpperCase.splatParam('array');
+      assert.deepEqual(mapToUpperCase('hello', 'world'), ['HELLO', 'WORLD']);
+    });
+  });
 });

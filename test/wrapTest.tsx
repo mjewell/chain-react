@@ -36,6 +36,7 @@ describe('wrap', () => {
 
     it('should return the same output for a given input', () => {
       const wrappedHoc = wrap(hoc);
+      assert.equal(wrappedHoc, wrap(hoc));
       assert.equal(wrappedHoc(TestComponent), wrappedHoc(TestComponent));
       assert.notEqual(wrappedHoc(TestComponent), wrappedHoc(OtherTestComponent));
     });
