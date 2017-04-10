@@ -59,7 +59,7 @@ describe('configurableChain', () => {
   it('should allow you to provide an interlace hoc', () => {
     const interlaceChain = configurableChain
       .lock({ interlaceHoc })
-      .splatParam<IHigherOrderComponent<any, any>>('hocs');
+      .splatLast('hocs');
     const composedHoc = interlaceChain(hoc1, hoc2);
     const Container = composedHoc(TestComponent);
     assert.equal(

@@ -18,10 +18,6 @@ By memoizing the HOCs we can avoid this issue entirely, allowing you to safely u
 
 Static methods are copied over to your containers automatically, meaning they will always be available.
 
-## API
-
-There are two simple methods provided by this library:
-
 ## `wrap`
 
 `wrap` takes a single higher-order component and returns a new higher order component. This higher order component adds a useful `displayName`, hoists non-react static methods from the component being wrapped, and is memoized so subsequent calls with the same argument will return the same new higher-order component.
@@ -45,4 +41,14 @@ const component = chainedHoc(myPresenter);
 
 // the chain looks like this:
 // myHoc1 -> myHoc2 -> myHoc3 -> myPresenter
+```
+
+## `configurableChain`
+
+A [configurable](https://github.com/mjewell/configurable-function) version of `chain`, which can also receive an `interlaceHoc`, a higher-order component that will be inserted between all higher-order components in the chain. This is useful for example, if you wanted to make all components `observer`s when using mobx. You could use this version of chain:
+
+```
+import { observer } from 'mobx-react';
+const chainWithObserver = chain.lock({ interlaceHoc: observer });
+const customChain = chainWithObserver.splatLast('hocs');
 ```

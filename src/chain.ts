@@ -1,6 +1,6 @@
-import { IConfigurableFunction, createConfigurableFunction } from './configurableFunction';
 import { IHigherOrderComponent } from './types';
 import { wrap } from './wrap';
+import { IConfigurableFunction, createConfigurableFunction } from 'configurable-function';
 import { flatMap, flowRight } from 'lodash';
 
 export interface IChainParams {
@@ -28,4 +28,4 @@ function chainBase<PropsIn, PropsOut>({
 }
 
 export const configurableChain = createConfigurableFunction(chainBase);
-export const chain = configurableChain.splatParam('hocs');
+export const chain = configurableChain.splatLast('hocs');
